@@ -902,10 +902,11 @@ class Game extends Client {
                 this.spellSelected = 0;
                 this.sceneState = 0;
                 this.waveCount = 0;
-                this.cameraAnticheatOffsetX = ((Math.random() * 100.0) | 0) - 50;
-                this.cameraAnticheatOffsetZ = ((Math.random() * 110.0) | 0) - 55;
-                this.cameraAnticheatAngle = ((Math.random() * 80.0) | 0) - 40;
-                this.minimapAnticheatAngle = ((Math.random() * 120.0) | 0) - 60;
+                //JIFEDIT remove anticheat random camera+minimap
+                this.cameraAnticheatOffsetX = 0;
+                this.cameraAnticheatOffsetZ = 0;
+                this.cameraAnticheatAngle = 0;
+                this.minimapAnticheatAngle = 0;
                 this.minimapZoom = ((Math.random() * 30.0) | 0) - 20;
                 this.orbitCameraYaw = (((Math.random() * 20.0) | 0) - 10) & 0x7ff;
                 this.minimapLevel = -1;
@@ -1292,25 +1293,8 @@ class Game extends Client {
                     this.cameraAnticheatAngle += this.cameraOffsetYawModifier;
                 }
             }
-
-            if (this.cameraAnticheatOffsetX < -50) {
-                this.cameraOffsetXModifier = 2;
-            }
-            if (this.cameraAnticheatOffsetX > 50) {
-                this.cameraOffsetXModifier = -2;
-            }
-            if (this.cameraAnticheatOffsetZ < -55) {
-                this.cameraOffsetZModifier = 2;
-            }
-            if (this.cameraAnticheatOffsetZ > 55) {
-                this.cameraOffsetZModifier = -2;
-            }
-            if (this.cameraAnticheatAngle < -40) {
-                this.cameraOffsetYawModifier = 1;
-            }
-            if (this.cameraAnticheatAngle > 40) {
-                this.cameraOffsetYawModifier = -1;
-            }
+            //JIFEDIT remove useless anticheat code
+            //there was code here
 
             this.minimapOffsetCycle++;
             if (this.minimapOffsetCycle > 500) {
@@ -1324,12 +1308,7 @@ class Game extends Client {
                 }
             }
 
-            if (this.minimapAnticheatAngle < -60) {
-                this.minimapAngleModifier = 2;
-            }
-            if (this.minimapAnticheatAngle > 60) {
-                this.minimapAngleModifier = -2;
-            }
+            //there was code here
 
             if (this.minimapZoom < -20) {
                 this.minimapZoomModifier = 1;
@@ -3356,6 +3335,35 @@ class Game extends Client {
                 this.out.p2(this.objInterface);
                 this.out.p2(this.objSelectedSlot);
                 this.out.p2(this.objSelectedInterface);
+            }
+            //JIFEDIT use all ITEM with INWORLDOBJECT
+        } else if (action === 0.217) {
+            //fucking typescript cudnt use a string
+            this.menuAction[optionId] = 217; //not sure if necesary but i dont know the codebase
+            //well enugh
+            if (this.localPlayer) {
+                const success: boolean = this.tryMove(this.localPlayer.pathTileX[0], this.localPlayer.pathTileZ[0], b, c, 2, 0, 0, 0, 0, 0, false);
+                if (!success) {
+                    this.tryMove(this.localPlayer.pathTileX[0], this.localPlayer.pathTileZ[0], b, c, 2, 1, 1, 0, 0, 0, false);
+                }
+
+                this.crossX = this.mouseClickX;
+                this.crossY = this.mouseClickY;
+                this.crossMode = 2;
+                this.crossCycle = 0;
+
+                // OPOBJU
+                console.log(this.objSelectedSlot);
+                while (32 > this.objSelectedSlot) {
+                    this.out.p1isaac(ClientProt.OPOBJU);
+                    this.out.p2(b + this.sceneBaseTileX);
+                    this.out.p2(c + this.sceneBaseTileZ);
+                    this.out.p2(a);
+                    this.out.p2(this.objInterface);
+                    this.out.p2(this.objSelectedSlot);
+                    this.out.p2(this.objSelectedInterface);
+                    this.objSelectedSlot++;
+                }
             }
         } else if (action === 1175) {
             // loc examine
@@ -6739,6 +6747,12 @@ class Game extends Client {
                     if (this.objSelected === 1) {
                         this.menuOption[this.menuSize] = 'Use ' + this.objSelectedName + ' with @lre@' + type.name;
                         this.menuAction[this.menuSize] = 217;
+                        this.menuParamA[this.menuSize] = obj.index;
+                        this.menuParamB[this.menuSize] = x;
+                        this.menuParamC[this.menuSize] = z;
+                        this.menuSize++;
+                        this.menuOption[this.menuSize] = 'Use all PROBLY BROKEN' + this.objSelectedName + ' with @lre@' + type.name;
+                        this.menuAction[this.menuSize] = 0.217;
                         this.menuParamA[this.menuSize] = obj.index;
                         this.menuParamB[this.menuSize] = x;
                         this.menuParamC[this.menuSize] = z;
